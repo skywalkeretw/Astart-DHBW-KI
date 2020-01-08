@@ -76,12 +76,14 @@ class AStar_Solver:
 
 def run(root,start, goal):
     print('starting ...')
-    a = AStar_Solver(start, goal)
-    a.Solve()
-    out = str(a.path)
+    if len(start) == len(goal):
+        a = AStar_Solver(start, goal)
+        a.Solve()
+        out = str(a.path).strip('[').strip(']').replace("'", "").replace(",", " ->")
+    else:
+        out = "something is missing"
     output = Label(root, text=out)
     output.pack()
-    #[print("%d)" % i + a.path[i]) for i in range(len(a.path))]
 
 if __name__ == "__main__":
     from tkinter import *
