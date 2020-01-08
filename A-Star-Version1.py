@@ -12,7 +12,6 @@ class Node():
     def __eq__(self, other):
         return self.position == other.position
 
-
 def astar(maze, start, goal, energy):
     """Returns a list of tuples as a path from the given start to the given end in the given maze"""
 
@@ -32,8 +31,8 @@ def astar(maze, start, goal, energy):
     while len(open_list) > 0 and energy > 0:
 
         # Get the current node
-        current_node = open_list[0]
-        current_index = 0
+        current_node, current_index = open_list[0], 0
+
         # enumerate: loop over somthing and have a automatic counter for counter, value in enumerate(list)
         for index, item in enumerate(open_list):
             if item.f < current_node.f:
@@ -43,6 +42,8 @@ def astar(maze, start, goal, energy):
         # Pop current off open list, add to closed list
         open_list.pop(current_index)
         closed_list.append(current_node)
+        # decrease energy by one
+        energy = energy -1
 
         # Found the goal
         if current_node == end_node:
@@ -55,8 +56,8 @@ def astar(maze, start, goal, energy):
 
         # Generate children
         children = []
-        for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1),
-                             (1, 1)]:  # Adjacent squares(around parent)
+        count = 0
+        for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]:  # Adjacent squares(around parent)
 
             # Get node position
             node_position = (current_node.position[0] + new_position[0], current_node.position[1] + new_position[1])
@@ -67,7 +68,10 @@ def astar(maze, start, goal, energy):
                 continue
             ''' add walls '''
             # Make sure walkable terrain
+            count += 1
+            print(str(count) + " " + str(maze[node_position[0]][node_position[1]]))
             if maze[node_position[0]][node_position[1]] != 0:
+                print("true")
                 continue
 
             # Create new node
@@ -124,39 +128,36 @@ def getMaze():
     print(maze)
 
     # set Walls
-    print('### 2) Get Wall data from csv ###')
-    try:
-        wallFile = input()
-    except:
+    print('### 2) Get Wall data from csv if empty uses example csv ###')
+    wallFile = input()
+    if not len(wallFile) > 4:
         wallFile = 'CSV-Data/S_A01_Mauer.csv'
     position_walls = pd.read_csv(wallFile, sep=';', header=None)
     position_walls.values
     print('### 3) Set Wall Data in maze ###')
-    # maze = setWalls(maze, position_walls)
+    maze = setWalls(maze, position_walls)
     # print(maze)
 
     # set Stars (2)
-    print('### 4) Get Star data from csv ###')
-    try:
-        starFile = input()
-    except:
+    print('### 4) Get Star data from csv if empty uses example csv###')
+    starFile = input()
+    if not len(starFile) > 4:
         starFile = 'CSV-Data/S_A01_Stern.csv'
     position_stars = pd.read_csv(starFile, sep=';', header=None)
     position_stars.values
     print('### 5) Set Star Data in maze ###')
-    # maze = setMazecontent(maze, position_stars, 2)
+    maze = setMazecontent(maze, position_stars, 2)
     # print(maze)
 
     # Set energy (3)
-    print('### 6) Get Energy data from csv ###')
-    try:
-        energyFile = input()
-    except:
+    print('### 6) Get Energy data from csv if empty uses example csv###')
+    energyFile = input()
+    if not len(energyFile) > 4:
         energyFile = 'CSV-Data/S_A01_Energie.csv'
     position_energy = pd.read_csv(energyFile, sep=';', header=None)
     position_energy.values
     print('### 7) Set Star Data in maze ###')
-    # maze = setMazecontent(maze, position_energy, 3)
+    maze = setMazecontent(maze, position_energy, 3)
     '''
     maze = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 1, 1, 0, 0, 0, 0, 0, 0, 0],
@@ -187,7 +188,9 @@ def getMaze():
 
 
 def main(start, goal, energy):
-    path = astar(getMaze(), start, goal, energy)
+    maze = getMaze()
+    print(maze)
+    path = astar(maze, start, goal, energy)
     print('### 8) Print Path ###')
     print(path)
 
