@@ -74,11 +74,35 @@ class AStar_Solver:
             print("Goal of " + self.goal + "is not possible")
         return self.path
 
+def run(root,start, goal):
+    print('starting ...')
+    a = AStar_Solver(start, goal)
+    a.Solve()
+    out = str(a.path)
+    output = Label(root, text=out)
+    output.pack()
+    #[print("%d)" % i + a.path[i]) for i in range(len(a.path))]
 
 if __name__ == "__main__":
-    start1 = "cdabfe"
-    goal1 = "abcdef"
-    print('starting ...')
-    a = AStar_Solver(start1, goal1)
-    a.Solve()
-    [print("%d)" % i + a.path[i]) for i in range(len(a.path))]
+    from tkinter import *
+
+    root = Tk()
+
+    startLable = Label(root, text="Start value")
+    startLable.pack()
+    startEntry = Entry(root, width= 50)
+    startEntry.pack()
+    startEntry.insert(0, "cdabfe")
+
+    goalLable = Label(root, text="Goal value")
+    goalLable.pack()
+    goalEntry = Entry(root, width= 50)
+    goalEntry.pack()
+    goalEntry.insert(0, "abcdef")
+
+
+    goBtn = Button(root, text="Run", command=lambda: run(root, startEntry.get(), goalEntry.get()))
+    goBtn.pack()
+
+    root.mainloop()
+
