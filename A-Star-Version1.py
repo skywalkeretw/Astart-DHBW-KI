@@ -114,7 +114,7 @@ def setWalls(maze, positions):
     return maze
 
 
-def main(start, goal, energy):
+def getMaze():
     import pandas as pd
     import numpy as np
 
@@ -125,7 +125,11 @@ def main(start, goal, energy):
 
     # set Walls
     print('### 2) Get Wall data from csv ###')
-    position_walls = pd.read_csv('S_A01_Mauer.csv', sep=';', header=None)
+    try:
+        wallFile = input()
+    except:
+        wallFile = 'CSV-Data/S_A01_Mauer.csv'
+    position_walls = pd.read_csv(wallFile, sep=';', header=None)
     position_walls.values
     print('### 3) Set Wall Data in maze ###')
     # maze = setWalls(maze, position_walls)
@@ -133,7 +137,11 @@ def main(start, goal, energy):
 
     # set Stars (2)
     print('### 4) Get Star data from csv ###')
-    position_stars = pd.read_csv('S_A01_Stern.csv', sep=';', header=None)
+    try:
+        starFile = input()
+    except:
+        starFile = 'CSV-Data/S_A01_Stern.csv'
+    position_stars = pd.read_csv(starFile, sep=';', header=None)
     position_stars.values
     print('### 5) Set Star Data in maze ###')
     # maze = setMazecontent(maze, position_stars, 2)
@@ -141,10 +149,15 @@ def main(start, goal, energy):
 
     # Set energy (3)
     print('### 6) Get Energy data from csv ###')
-    position_energy = pd.read_csv('S_A01_Energie.csv', sep=';', header=None)
+    try:
+        energyFile = input()
+    except:
+        energyFile = 'CSV-Data/S_A01_Energie.csv'
+    position_energy = pd.read_csv(energyFile, sep=';', header=None)
     position_energy.values
     print('### 7) Set Star Data in maze ###')
     # maze = setMazecontent(maze, position_energy, 3)
+    '''
     maze = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 1, 1, 0, 0, 0, 0, 0, 0, 0],
             [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -155,7 +168,8 @@ def main(start, goal, energy):
             [0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
             [0, 0, 0, 0, 0, 0, 1, 0, 1, 0],
             [0, 0, 0, 0, 0, 0, 1, 0, 0, 0]]
-    print(maze)
+    #print(maze)
+    '''
 
     '''
     maze = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -169,11 +183,43 @@ def main(start, goal, energy):
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
     '''
+    return maze
 
-    path = astar(maze, start, goal, energy)
+
+def main(start, goal, energy):
+    path = astar(getMaze(), start, goal, energy)
     print('### 8) Print Path ###')
     print(path)
 
 
 if __name__ == '__main__':
-    main((0, 0), (9, 9), 5)
+    # Input start coordinate in format x,y if left empty will default to 0,0
+    print("### Enter start as: x,y | default 0, 0")
+    try:
+        start = input()
+        sx, sy = start.split(",", 2)
+        sx, sy = int(sx), int(sy)
+    except:
+        sx = 0
+        sy = 0
+
+    # Input goal coordinate in format x,y if left empty will default to  9, 9
+    print("### Enter goal as: x,y | default 9, 9")
+    try:
+        goal = input()
+        gx, gy = goal.split(",", 2)
+        gx, gy = int(gx), int(gy)
+    except:
+        gx = 9
+        gy = 9
+
+    # Input energy as number if left empty will default to 5
+    print("### Enter energy as number default 5")
+    try:
+        e = input()
+        e = int(e)
+    except:
+        e = 5
+    print("start:(" + str(sx) + "," + str(sy) + ") goal:(" + str(gx) + "," + str(gy) + ") energy:(" + str(e) + ")")
+
+    main((sx, sy), (gx, gy), e)
