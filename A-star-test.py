@@ -79,7 +79,7 @@ def run(root,start, goal):
     if len(start) == len(goal):
         a = AStar_Solver(start, goal)
         a.Solve()
-        out = str(a.path).strip('[').strip(']').replace("'", "").replace(",", " ->")
+        out = str(path).strip('[').strip(']').replace("'", "").replace(",", " ->")
     else:
         out = "something is missing"
     output = Label(root, text=out)

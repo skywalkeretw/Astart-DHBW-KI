@@ -12,6 +12,29 @@ class Node():
     def __eq__(self, other):
         return self.position == other.position
 
+class InputData():
+    def __init__(self):
+        self.walls = None
+        self.energy = None
+        self.stars = None
+        self.start = None
+        self.goal = None
+        self.startEnergy = None
+        self.maze = None
+
+
+    def clear(self):
+        self.walls = None
+        self.energy = None
+        self.stars = None
+        self.start = None
+        self.goal = None
+        self.startEnergy = None
+        self.maze = None
+
+inputData = InputData()
+
+
 def astar(maze, start, goal, energy):
     """Returns a list of tuples as a path from the given start to the given end in the given maze"""
 
@@ -44,23 +67,18 @@ def astar(maze, start, goal, energy):
         closed_list.append(current_node)
 
         if maze[current_node.position[0]][current_node.position[1]] == 2 or maze[current_node.position[0]][current_node.position[1]] == 3:
-            energy += 1
+            energy += 5
             maze[current_node.position[0]][current_node.position[1]] -= 2
 
         if maze[current_node.position[0]][current_node.position[1]] == 4 or maze[current_node.position[0]][current_node.position[1]] == 5:
-            stars += 1
+            stars += 2
             maze[current_node.position[0]][current_node.position[1]] -= 4
         # decrease energy by one
         energy -= 1
 
         # Found the goal
         if current_node == end_node:
-            path = []
-            current = current_node
-            while current is not None:
-                path.append(current.position)
-                current = current.parent
-            return path[::-1], energy, stars  # Return reversed path
+            return returnAstar(current_node, energy, stars, True)
 
         # Generate children
         children = []
@@ -116,7 +134,15 @@ def astar(maze, start, goal, energy):
             # Add the child to the open list
             open_list.append(child)
         #print(open_list)
+    return returnAstar(open_list[0], energy, stars, False)
 
+def returnAstar(current_node, energy, stars, fin):
+    path = []
+    current = current_node
+    while current is not None:
+        path.append(current.position)
+        current = current.parent
+    return path[::-1], energy, stars, fin # Return reversed path
 
 def appendChildNode(children, current_node, node_position):
     # Create new node
@@ -125,26 +151,107 @@ def appendChildNode(children, current_node, node_position):
     children.append(new_node)
     return children
 
-
 def setMazecontent(maze, positions, itemValue):
-    for index, col in positions.iterrows():
-        x, y = col
+    for index in range(0,len(positions)):
+        x, y = positions[index]
         if maze[x][y] == 0 or maze[x][y] == 1:
             maze[x][y] += itemValue
     return maze
 
-
 def setWalls(maze, positions):
-    for index, col in positions.iterrows():
-        x1, y1, x2, y2 = col
+    for index in range(0,len(positions)):
+        x1, y1, x2, y2 = positions[index]
         maze[x1][y1] = maze[x2][y2] = 1
     return maze
 
+def getFileName(name):
+    from tkinter import filedialog
+    if name == 'walls':
+        inputData.walls = filedialog.askopenfilename()
+    if name == 'stars':
+        inputData.stars = filedialog.askopenfilename()
+    if name == 'energy':
+        inputData.energy = filedialog.askopenfilename()
 
-def getMaze():
-    import pandas as pd
+def guiStart():
+    import tkinter as tk
+    root = tk.Tk()
+
+    startLable = tk.Label(root, text="Start value")
+    startLable.pack()
+    startEntry = tk.Entry(root, width=50)
+    startEntry.pack()
+    startEntry.insert(0, "0,0")
+    inputData.start = startEndPosition(startEntry.get())
+
+    goalLable = tk.Label(root, text="Goal value")
+    goalLable.pack()
+    goalEntry = tk.Entry(root, width=50)
+    goalEntry.pack()
+    goalEntry.insert(0, "9,9")
+    inputData.goal = startEndPosition(goalEntry.get())
+
+    startEnergyLable = tk.Label(root, text="Goal value")
+    startEnergyLable.pack()
+    startEnergyEntry = tk.Entry(root, width=50)
+    startEnergyEntry.pack()
+    startEnergyEntry.insert(0, "15")
+    inputData.startEnergy = int(startEnergyEntry.get())
+
+    getWallsBtn = tk.Button(root, text="Get Walls", command=lambda: getFileName('walls'))
+    getWallsBtn.pack()
+    #wallFileLable = tk.Label(root, text=inputData.walls)
+    #wallFileLable.pack()
+
+    getEnergysBtn = tk.Button(root, text="Get Energy", command=lambda: getFileName('stars'))
+    getEnergysBtn.pack()
+    #energyFileLable = tk.Label(root, text=inputData.walls)
+    #energyFileLable.pack()
+
+    getStarsBtn = tk.Button(root, text="Get Stars", command=lambda: getFileName('energy'))
+    getStarsBtn.pack()
+    #starFileLable = tk.Label(root, text=inputData.walls)
+    #starFileLable.pack()
+
+
+    goBtn = tk.Button(root, text="Run", command=lambda: displayGuiAStar(root,tk))
+    goBtn.pack()
+
+    root.mainloop()
+
+
+
+def displayGuiAStar(root, tk):
     import numpy as np
+    maze = np.zeros((10, 10))
+    maze = setWalls(maze, itemPosition(inputData.walls))
+    maze = setMazecontent(maze, itemPosition(inputData.energy), 2)
+    maze = setMazecontent(maze, itemPosition(inputData.stars), 4)
+    path, endEnergy, stars, completed = astar(maze, inputData.start, inputData.goal, inputData.startEnergy)
+    out = "Path: " +str(path).strip('[').strip(']').replace(',', ' ->') + "\nStars: " + str(stars) + "\nEnergy left: " + str(endEnergy)
+    output = tk.Label(root, text=out)
+    output.pack()
+    pass
+def cmdStart(args):
+    # Input start coordinate in format x,y if left empty will default to 0,0
+    print("### Enter start as: x,y | default 0, 0")
+    start = startEndPosition(args.start)
 
+    # Input goal coordinate in format x,y if left empty will default to  9, 9
+    print("### Enter goal as: x,y | default 9, 9")
+    goal = startEndPosition(args.goal)
+
+    # Input energy as number if left empty will default to 5
+    print("### Enter energy as number default 5")
+    try:
+        e = args.startenergy
+        e = int(e)
+    except:
+        e = 20
+
+    start, goal, startEnergy = start, goal, e
+    print(startEnergy)
+    import numpy as np
     # Generate Empty maze
     maze = np.zeros((10, 10))
     print('### 1) Generate Clean Maze ###')
@@ -152,77 +259,81 @@ def getMaze():
 
     # set Walls
     print('### 2) Get Wall data from csv if empty uses example csv ###')
-    wallFile = input()
-    if not len(wallFile) > 4:
-        wallFile = 'CSV-Data/S_A01_Mauer.csv'
-    position_walls = pd.read_csv(wallFile, sep=';', header=None)
-    position_walls.values
+    wallFile = args.walls
+    fileExists(wallFile)
     print('### 3) Set Wall Data in maze ###')
-    maze = setWalls(maze, position_walls)
+    maze = setWalls(maze, itemPosition(wallFile))
     # print(maze)
 
     # Set energy (2 or 3)
     print('### 4) Get Energy data from csv if empty uses example csv###')
-    energyFile = input()
-    if not len(energyFile) > 4:
-        energyFile = 'CSV-Data/S_A01_Energie.csv'
-    position_energy = pd.read_csv(energyFile, sep=';', header=None)
-    position_energy.values
+    energyFile = args.energy
+    fileExists(energyFile)
     print('### 5) Set Star Data in maze ###')
-    maze = setMazecontent(maze, position_energy, 2)
+    maze = setMazecontent(maze, itemPosition(energyFile), 2)
 
     # set Stars (4 or 5)
     print('### 6) Get Star data from csv if empty uses example csv###')
-    starFile = input()
-    if not len(starFile) > 4:
-        starFile = 'CSV-Data/S_A01_Stern.csv'
-    position_stars = pd.read_csv(starFile, sep=';', header=None)
-    position_stars.values
+    starFile = args.stars
     print('### 7) Set Star Data in maze ###')
-    maze = setMazecontent(maze, position_stars, 4)
+    maze = setMazecontent(maze, itemPosition(starFile), 4)
 
-    return maze
+    path, endEnergy, stars, completed = astar(maze, start, goal, startEnergy)
 
-
-def main(start, goal, energy):
-    maze = getMaze()
-    print(maze)
-    path, energy, stars = astar(maze, start, goal, energy)
-    print('### 8) Print Path ###')
+    if completed:
+        print('### 8) A* was successful ###')
+    else:
+        print('### 8) Not enough energy to Finish displaying information as far as we got ###')
+    print('### 9) Print Path ###')
     print(path)
-    print("### 9) Print energy ###")
-    print(energy)
-    print('### 10) print stars ###')
+    print("### 10) Print energy ###")
+    print(endEnergy)
+    print('### 11) print stars ###')
     print(stars)
 
+
+def startEndPosition(args):
+    try:
+        x, y = args.split(",", 2)
+        x, y = int(x), int(y)
+    except:
+        x, y = 0, 0
+    return (x, y)
+
+
+def itemPosition(file):
+    import pandas as pd
+    position_stars = pd.read_csv(file, sep=';', header=None)
+    return position_stars.values
+
+
+def fileExists(file):
+    import sys
+    from os import path
+    if not path.exists(file):
+        print('File:' + file + ' doesnt exist')
+        sys.exit()
+
+
 if __name__ == '__main__':
-    # Input start coordinate in format x,y if left empty will default to 0,0
-    print("### Enter start as: x,y | default 0, 0")
-    try:
-        start = input()
-        sx, sy = start.split(",", 2)
-        sx, sy = int(sx), int(sy)
-    except:
-        sx = 0
-        sy = 0
+    import argparse as argp
+    parser = argp.ArgumentParser()
+    parser.add_argument('-s', '--start', help='Startvalue as: "x,y"')
+    parser.add_argument('-g', '--goal', help='Goalvalue as: "x,y"')
+    parser.add_argument('-se', '--startenergy', help='Energy as number')
+    parser.add_argument('-w', '--walls', help='Path to wall csv')
+    parser.add_argument('-st', '--stars', help='Path to star csv')
+    parser.add_argument('-e', '--energy', help='Path to energy csv')
+    args = parser.parse_args()
 
-    # Input goal coordinate in format x,y if left empty will default to  9, 9
-    print("### Enter goal as: x,y | default 9, 9")
-    try:
-        goal = input()
-        gx, gy = goal.split(",", 2)
-        gx, gy = int(gx), int(gy)
-    except:
-        gx = 9
-        gy = 9
-
-    # Input energy as number if left empty will default to 5
-    print("### Enter energy as number default 5")
-    try:
-        e = input()
-        e = int(e)
-    except:
-        e = 20
-    print("start:(" + str(sx) + "," + str(sy) + ") goal:(" + str(gx) + "," + str(gy) + ") energy:(" + str(e) + ")")
-
-    main((sx, sy), (gx, gy), e)
+    if (args.energy is not None
+            and args.goal is not None
+            and args.stars is not None
+            and args.start is not None
+            and args.startenergy is not None
+            and args.energy is not None
+            and args.walls):
+        print("Start CMD")
+        cmdStart(args)
+    else:
+        guiStart()
