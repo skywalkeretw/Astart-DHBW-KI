@@ -20,7 +20,7 @@ def astar(maze, start, goal, energy):
     start_node.g = start_node.h = start_node.f = 0
     end_node = Node(None, goal)
     end_node.g = end_node.h = end_node.f = 0
-
+    stars = 0
     # Initialize both open and closed list
     open_list, closed_list = [], []
 
@@ -42,8 +42,16 @@ def astar(maze, start, goal, energy):
         # Pop current off open list, add to closed list
         open_list.pop(current_index)
         closed_list.append(current_node)
+
+        if maze[current_node.position[0]][current_node.position[1]] == 2 or maze[current_node.position[0]][current_node.position[1]] == 3:
+            energy += 1
+            maze[current_node.position[0]][current_node.position[1]] -= 2
+
+        if maze[current_node.position[0]][current_node.position[1]] == 4 or maze[current_node.position[0]][current_node.position[1]] == 5:
+            stars += 1
+            maze[current_node.position[0]][current_node.position[1]] -= 4
         # decrease energy by one
-        energy = energy -1
+        energy -= 1
 
         # Found the goal
         if current_node == end_node:
@@ -52,13 +60,11 @@ def astar(maze, start, goal, energy):
             while current is not None:
                 path.append(current.position)
                 current = current.parent
-            return path[::-1]  # Return reversed path
+            return path[::-1], energy, stars  # Return reversed path
 
         # Generate children
         children = []
-        count = 0
         for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]:  # Adjacent squares(around parent)
-
             # Get node position
             node_position = (current_node.position[0] + new_position[0], current_node.position[1] + new_position[1])
 
@@ -66,19 +72,27 @@ def astar(maze, start, goal, energy):
             if node_position[0] > (len(maze) - 1) or node_position[0] < 0 or node_position[1] > (
                     len(maze[len(maze) - 1]) - 1) or node_position[1] < 0:
                 continue
-            ''' add walls '''
-            # Make sure walkable terrain
-            count += 1
-            print(str(count) + " " + str(maze[node_position[0]][node_position[1]]))
-            if maze[node_position[0]][node_position[1]] != 0:
-                print("true")
+
+            #Empty Field
+            if maze[node_position[0]][node_position[1]] == 0:
+                children = appendChildNode(children, current_node, node_position)
+
+            # Wall between filds
+            if maze[current_node.position[0]][current_node.position[1]] == 1 and maze[node_position[0]][node_position[1]] == 1 \
+                or maze[current_node.position[0]][current_node.position[1]] == 1 and maze[node_position[0]][node_position[1]] == 3 \
+                or maze[current_node.position[0]][current_node.position[1]] == 1 and maze[node_position[0]][node_position[1]] == 5:
                 continue
 
-            # Create new node
-            new_node = Node(current_node, node_position)
 
-            # Append
-            children.append(new_node)
+
+            # Energy is on field
+            if maze[node_position[0]][node_position[1]] == 2:
+                children = appendChildNode(children, current_node, node_position)
+
+            # Star is on field
+            if maze[node_position[0]][node_position[1]] == 4:
+                children = appendChildNode(children, current_node, node_position)
+
 
         # Loop through children
         for child in children:
@@ -101,20 +115,29 @@ def astar(maze, start, goal, energy):
 
             # Add the child to the open list
             open_list.append(child)
+        #print(open_list)
+
+
+def appendChildNode(children, current_node, node_position):
+    # Create new node
+    new_node = Node(current_node, node_position)
+    # Append
+    children.append(new_node)
+    return children
 
 
 def setMazecontent(maze, positions, itemValue):
     for index, col in positions.iterrows():
         x, y = col
-        maze[x][y] = itemValue
+        if maze[x][y] == 0 or maze[x][y] == 1:
+            maze[x][y] += itemValue
     return maze
 
 
 def setWalls(maze, positions):
     for index, col in positions.iterrows():
         x1, y1, x2, y2 = col
-        maze[x1][y1] = 8
-        maze[x2][y2] = 9
+        maze[x1][y1] = maze[x2][y2] = 1
     return maze
 
 
@@ -138,62 +161,39 @@ def getMaze():
     maze = setWalls(maze, position_walls)
     # print(maze)
 
-    # set Stars (2)
-    print('### 4) Get Star data from csv if empty uses example csv###')
-    starFile = input()
-    if not len(starFile) > 4:
-        starFile = 'CSV-Data/S_A01_Stern.csv'
-    position_stars = pd.read_csv(starFile, sep=';', header=None)
-    position_stars.values
-    print('### 5) Set Star Data in maze ###')
-    maze = setMazecontent(maze, position_stars, 2)
-    # print(maze)
-
-    # Set energy (3)
-    print('### 6) Get Energy data from csv if empty uses example csv###')
+    # Set energy (2 or 3)
+    print('### 4) Get Energy data from csv if empty uses example csv###')
     energyFile = input()
     if not len(energyFile) > 4:
         energyFile = 'CSV-Data/S_A01_Energie.csv'
     position_energy = pd.read_csv(energyFile, sep=';', header=None)
     position_energy.values
-    print('### 7) Set Star Data in maze ###')
-    maze = setMazecontent(maze, position_energy, 3)
-    '''
-    maze = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 1, 1, 0, 0, 0, 0, 0, 0, 0],
-            [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 1, 1, 1, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 1, 1, 1, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-            [0, 0, 0, 0, 0, 0, 1, 0, 1, 0],
-            [0, 0, 0, 0, 0, 0, 1, 0, 0, 0]]
-    #print(maze)
-    '''
+    print('### 5) Set Star Data in maze ###')
+    maze = setMazecontent(maze, position_energy, 2)
 
-    '''
-    maze = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
-    '''
+    # set Stars (4 or 5)
+    print('### 6) Get Star data from csv if empty uses example csv###')
+    starFile = input()
+    if not len(starFile) > 4:
+        starFile = 'CSV-Data/S_A01_Stern.csv'
+    position_stars = pd.read_csv(starFile, sep=';', header=None)
+    position_stars.values
+    print('### 7) Set Star Data in maze ###')
+    maze = setMazecontent(maze, position_stars, 4)
+
     return maze
 
 
 def main(start, goal, energy):
     maze = getMaze()
     print(maze)
-    path = astar(maze, start, goal, energy)
+    path, energy, stars = astar(maze, start, goal, energy)
     print('### 8) Print Path ###')
     print(path)
-
+    print("### 9) Print energy ###")
+    print(energy)
+    print('### 10) print stars ###')
+    print(stars)
 
 if __name__ == '__main__':
     # Input start coordinate in format x,y if left empty will default to 0,0
@@ -222,7 +222,7 @@ if __name__ == '__main__':
         e = input()
         e = int(e)
     except:
-        e = 5
+        e = 20
     print("start:(" + str(sx) + "," + str(sy) + ") goal:(" + str(gx) + "," + str(gy) + ") energy:(" + str(e) + ")")
 
     main((sx, sy), (gx, gy), e)
