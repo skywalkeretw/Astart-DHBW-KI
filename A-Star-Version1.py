@@ -290,7 +290,7 @@ def cmdStart(args):
     starFile = args.stars
     print('### 7) Set Star Data in maze ###')
     maze = setMazecontent(maze, itemPosition(starFile), 4)
-
+    print(maze)
     path, endEnergy, stars, completed = astar(maze, start, goal, startEnergy)
 
     if completed:
