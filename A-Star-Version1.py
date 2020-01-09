@@ -12,6 +12,7 @@ class Node():
     def __eq__(self, other):
         return self.position == other.position
 
+
 class InputData():
     def __init__(self):
         self.walls = None
@@ -22,7 +23,6 @@ class InputData():
         self.startEnergy = None
         self.maze = None
 
-
     def clear(self):
         self.walls = None
         self.energy = None
@@ -31,6 +31,7 @@ class InputData():
         self.goal = None
         self.startEnergy = None
         self.maze = None
+
 
 inputData = InputData()
 
@@ -66,11 +67,15 @@ def astar(maze, start, goal, energy):
         open_list.pop(current_index)
         closed_list.append(current_node)
 
-        if maze[current_node.position[0]][current_node.position[1]] == 2 or maze[current_node.position[0]][current_node.position[1]] == 3:
+        if maze[current_node.position[0]][current_node.position[1]] == 2 or maze[current_node.position[0]][
+            current_node.position[1]] == 3:
+            print('energy')
             energy += 5
             maze[current_node.position[0]][current_node.position[1]] -= 2
 
-        if maze[current_node.position[0]][current_node.position[1]] == 4 or maze[current_node.position[0]][current_node.position[1]] == 5:
+        if maze[current_node.position[0]][current_node.position[1]] == 4 or maze[current_node.position[0]][
+            current_node.position[1]] == 5:
+            print('star')
             stars += 2
             maze[current_node.position[0]][current_node.position[1]] -= 4
         # decrease energy by one
@@ -82,7 +87,8 @@ def astar(maze, start, goal, energy):
 
         # Generate children
         children = []
-        for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]:  # Adjacent squares(around parent)
+        for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1),
+                             (1, 1)]:  # Adjacent squares(around parent)
             # Get node position
             node_position = (current_node.position[0] + new_position[0], current_node.position[1] + new_position[1])
 
@@ -91,17 +97,18 @@ def astar(maze, start, goal, energy):
                     len(maze[len(maze) - 1]) - 1) or node_position[1] < 0:
                 continue
 
-            #Empty Field
+            # Empty Field
             if maze[node_position[0]][node_position[1]] == 0:
                 children = appendChildNode(children, current_node, node_position)
 
             # Wall between filds
-            if maze[current_node.position[0]][current_node.position[1]] == 1 and maze[node_position[0]][node_position[1]] == 1 \
-                or maze[current_node.position[0]][current_node.position[1]] == 1 and maze[node_position[0]][node_position[1]] == 3 \
-                or maze[current_node.position[0]][current_node.position[1]] == 1 and maze[node_position[0]][node_position[1]] == 5:
+            if maze[current_node.position[0]][current_node.position[1]] == 1 and maze[node_position[0]][
+                node_position[1]] == 1 \
+                    or maze[current_node.position[0]][current_node.position[1]] == 1 and maze[node_position[0]][
+                node_position[1]] == 3 \
+                    or maze[current_node.position[0]][current_node.position[1]] == 1 and maze[node_position[0]][
+                node_position[1]] == 5:
                 continue
-
-
 
             # Energy is on field
             if maze[node_position[0]][node_position[1]] == 2:
@@ -110,7 +117,6 @@ def astar(maze, start, goal, energy):
             # Star is on field
             if maze[node_position[0]][node_position[1]] == 4:
                 children = appendChildNode(children, current_node, node_position)
-
 
         # Loop through children
         for child in children:
@@ -123,7 +129,7 @@ def astar(maze, start, goal, energy):
             # Create the f, g, and h values
             child.g = current_node.g + 1
             child.h = ((child.position[0] - end_node.position[0]) ** 2) + (
-                        (child.position[1] - end_node.position[1]) ** 2)
+                    (child.position[1] - end_node.position[1]) ** 2)
             child.f = child.g + child.h
 
             # Child is already in the open list
@@ -133,8 +139,9 @@ def astar(maze, start, goal, energy):
 
             # Add the child to the open list
             open_list.append(child)
-        #print(open_list)
+        # print(open_list)
     return returnAstar(open_list[0], energy, stars, False)
+
 
 def returnAstar(current_node, energy, stars, fin):
     path = []
@@ -142,7 +149,8 @@ def returnAstar(current_node, energy, stars, fin):
     while current is not None:
         path.append(current.position)
         current = current.parent
-    return path[::-1], energy, stars, fin # Return reversed path
+    return path[::-1], energy, stars, fin  # Return reversed path
+
 
 def appendChildNode(children, current_node, node_position):
     # Create new node
@@ -151,18 +159,21 @@ def appendChildNode(children, current_node, node_position):
     children.append(new_node)
     return children
 
+
 def setMazecontent(maze, positions, itemValue):
-    for index in range(0,len(positions)):
+    for index in range(0, len(positions)):
         x, y = positions[index]
         if maze[x][y] == 0 or maze[x][y] == 1:
             maze[x][y] += itemValue
     return maze
 
+
 def setWalls(maze, positions):
-    for index in range(0,len(positions)):
+    for index in range(0, len(positions)):
         x1, y1, x2, y2 = positions[index]
         maze[x1][y1] = maze[x2][y2] = 1
     return maze
+
 
 def getFileName(name):
     from tkinter import filedialog
@@ -172,6 +183,7 @@ def getFileName(name):
         inputData.stars = filedialog.askopenfilename()
     if name == 'energy':
         inputData.energy = filedialog.askopenfilename()
+
 
 def guiStart():
     import tkinter as tk
@@ -200,25 +212,23 @@ def guiStart():
 
     getWallsBtn = tk.Button(root, text="Get Walls", command=lambda: getFileName('walls'))
     getWallsBtn.pack()
-    #wallFileLable = tk.Label(root, text=inputData.walls)
-    #wallFileLable.pack()
+    # wallFileLable = tk.Label(root, text=inputData.walls)
+    # wallFileLable.pack()
 
-    getEnergysBtn = tk.Button(root, text="Get Energy", command=lambda: getFileName('stars'))
+    getEnergysBtn = tk.Button(root, text="Get Energy", command=lambda: getFileName('energy'))
     getEnergysBtn.pack()
-    #energyFileLable = tk.Label(root, text=inputData.walls)
-    #energyFileLable.pack()
+    # energyFileLable = tk.Label(root, text=inputData.walls)
+    # energyFileLable.pack()
 
-    getStarsBtn = tk.Button(root, text="Get Stars", command=lambda: getFileName('energy'))
+    getStarsBtn = tk.Button(root, text="Get Stars", command=lambda: getFileName('stars'))
     getStarsBtn.pack()
-    #starFileLable = tk.Label(root, text=inputData.walls)
-    #starFileLable.pack()
+    # starFileLable = tk.Label(root, text=inputData.walls)
+    # starFileLable.pack()
 
-
-    goBtn = tk.Button(root, text="Run", command=lambda: displayGuiAStar(root,tk))
+    goBtn = tk.Button(root, text="Run", command=lambda: displayGuiAStar(root, tk))
     goBtn.pack()
 
     root.mainloop()
-
 
 
 def displayGuiAStar(root, tk):
@@ -228,10 +238,13 @@ def displayGuiAStar(root, tk):
     maze = setMazecontent(maze, itemPosition(inputData.energy), 2)
     maze = setMazecontent(maze, itemPosition(inputData.stars), 4)
     path, endEnergy, stars, completed = astar(maze, inputData.start, inputData.goal, inputData.startEnergy)
-    out = "Path: " +str(path).strip('[').strip(']').replace(',', ' ->') + "\nStars: " + str(stars) + "\nEnergy left: " + str(endEnergy)
+    out = "Path: " + str(path).strip('[').strip(']').replace(',', ' ->') + "\nStars: " + str(
+        stars) + "\nEnergy left: " + str(endEnergy)
     output = tk.Label(root, text=out)
     output.pack()
     pass
+
+
 def cmdStart(args):
     # Input start coordinate in format x,y if left empty will default to 0,0
     print("### Enter start as: x,y | default 0, 0")
@@ -317,6 +330,7 @@ def fileExists(file):
 
 if __name__ == '__main__':
     import argparse as argp
+
     parser = argp.ArgumentParser()
     parser.add_argument('-s', '--start', help='Startvalue as: "x,y"')
     parser.add_argument('-g', '--goal', help='Goalvalue as: "x,y"')
