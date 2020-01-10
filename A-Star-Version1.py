@@ -58,6 +58,7 @@ def astar(maze, start, goal, energy):
         current_node, current_index = open_list[0], 0
 
         # enumerate: loop over somthing and have a automatic counter for counter, value in enumerate(list)
+        # Evaluate the node with the lowest f-Function value and set as the current node
         for index, item in enumerate(open_list):
             if item.f < current_node.f:
                 current_node = item
@@ -67,17 +68,28 @@ def astar(maze, start, goal, energy):
         open_list.pop(current_index)
         closed_list.append(current_node)
 
+        # Check if the current position contains an energy boost and add it to the remaining energy
         if maze[current_node.position[0]][current_node.position[1]] == 2 or maze[current_node.position[0]][
             current_node.position[1]] == 3:
             print('energy')
+
+            # Add 5 points to the remaining energy
             energy += 5
+
+            # Remove the Energy from the Node and set the Node to a default Node with(out) a wall
             maze[current_node.position[0]][current_node.position[1]] -= 2
 
+        # Check if the current position contains a star
         if maze[current_node.position[0]][current_node.position[1]] == 4 or maze[current_node.position[0]][
             current_node.position[1]] == 5:
             print('star')
+
+            # Add 2 points to the current score
             stars += 2
+
+            # Remove the Star from the Node and set the Node to a default Node with(out) a wall 
             maze[current_node.position[0]][current_node.position[1]] -= 4
+        
         # decrease energy by one
         energy -= 1
 
