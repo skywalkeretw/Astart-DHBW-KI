@@ -3,6 +3,29 @@ A* implementation for a maze as a project for the module artificial intelligence
 
 ---
 ## Dokumentation
+### Ziel
+Es soll ein Programm erstellt werden, welches den Besten weg durch ein Labyrinth findet. Hierzu soll der A* Algorithmus verwendet werden.
+### Parameter
+Beim Labyrinth handelt es sich um ein n mal n großes Feld (2 Dimensionales Array der Größe 10x10).Angegeben wurde das es mit einem 10 mal 10 großes Feld Funktionieren soll.  
+Start und Ziel werden als Korodinaten angegeben (x, y).
+Das Labyrinth soll zudem verschidene Objekte beinhalten: Sterne, Mauern und Energie.
+Die Position dieser Objekte werden aus 3 verschiedenen csv Dateien eingelesen.  
+Energie und Sterne werden als Kordinaten in den csv Dateien gespeichert und dann ind dem Feld mit der angegebenen Position Platziert.  
+Bei den Mauern wird in der csv 2 Koordinaten angegeben zwischen dem sich eine Mauer befinden soll. 
+#### Feldererklärung
+Die Felder des Labirinth werden mit Zahlen gekennzeichnet um seinen Inhalt darzustellen
++ 0 = Leeres Feld  
++ 1 = Feld mit angrenzender Mauer  
++ 2 = Feld mit Energy  
++ 3 = Feld mir Energy und angrenzender Mauer (Feld mit Mauer (1) plus (+) Feld mit Energy (2))
++ 4 = Feld mit Stern
++ 5 = Feld mit Stern und angrenzender Mauer  (Feld mit Mauer (1) plus (+) Feld mit Stern (3))   
+
+Es ist nicht möglich von einem feld mit Mauer (1) auf ein anderes Feld mit Mauer zu gehen (1, 3, 5).  
+Wenn man ein Feld mit Energy (2, 3) oder Stern (4, 5) betritt so wird dies um den Standardwert des Feldes reduziert (-2 oder -4)
+dadurch wird diese Feld dann zu einem Leeren Felod oder einem mit Mauer (0, 1) und der Stern oder die Energie wird eingesammelt
+
+
 ### Verwendung:
 Die Anwendung kan in 2 verschidenen Modi verwendet werden. Einmal eine CLI Anwedung welces einmal durchläuft und das Ergebnis ausgibt.
 Und ein Grafische Benutzeroberfläche wo die Eingabewerte mehrfach eingegeben und angepasst werden können.
@@ -40,19 +63,7 @@ GUI bsp
 foo@bar:~/Astart-DHBW-KI$ python3 A-Star-Version1.py 
 ```
 
-### Labyrinth
-Das Labyrinth welches erstellt wird wird als 2 dimensionales Array gespeichert (siehe Bsp.)  
-#### Feldererklärung
-+ 0 = Leeres Feld  
-+ 1 = Feld mit Mauer  
-+ 2 = Feld mit Energy  
-+ 3 = Feld mir Energy und Mauer (Feld mit Mauer (1) plus (+) Feld mit Energy (2))
-+ 4 = Feld mit Stern
-+ 5 = Feld mit Stern und Mauer  (Feld mit Mauer (1) plus (+) Feld mit Stern (3))   
 
-Es ist nicht möglich von einem feld mit Mauer (1) auf ein anderes Feld mit Mauer zu gehen (1, 3, 5).  
-Wenn man ein Feld mit Energy (2, 3) oder Stern (4, 5) betritt so wird dies um den Standardwert des Feldes reduziert (-2 oder -4)
-dadurch wird diese Feld dann zu einem Leeren Felod oder einem mit Mauer (0, 1)
 
 
 ```console
