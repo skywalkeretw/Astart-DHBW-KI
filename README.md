@@ -34,7 +34,7 @@ Für die umsetztung wurden einige Biblotheken von Python verwendet. Diese Sind z
 + Sys
 + Argparse:  Bibliothek um die CLI interface zu erstellen
 ## Verwendung mit Beispiele
-###Command Line Interface (CLI)
+### Command Line Interface (CLI)
 Die CLI bestitzt 2 Hauptoptionen man kann die Hilfe aufrufen oder die Eigenliche Anwendung Verwenden. Die Hilfe wird mit dem nachfolgendem Befehl aufgerufen.
 ```shell script
 foo@bar:~/Astart-DHBW-KI$ python3 A-Star-Search.py -h
@@ -106,7 +106,7 @@ Process finished with exit code 0
 
 ```
 
-###Graphical User Interface (GUI)
+### Graphical User Interface (GUI)
 Um die Grafische Benutzeroberfläche aufzurufen wird der Script ohne Parameter ausgeführt.
 ```shell script
 foo@bar:~/Astart-DHBW-KI$ python3 A-Star-Search.py 
