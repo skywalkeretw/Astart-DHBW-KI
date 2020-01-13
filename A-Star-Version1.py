@@ -14,7 +14,13 @@ class Node():
 
 
 class InputData():
+    """
+    class used as global storages
+    """
     def __init__(self):
+        """
+        constructor to set all variables to None
+        """
         self.walls = None
         self.energy = None
         self.stars = None
@@ -24,6 +30,9 @@ class InputData():
         self.maze = None
 
     def clear(self):
+        """
+        set all variables to None
+        """
         self.walls = None
         self.energy = None
         self.stars = None
@@ -32,26 +41,37 @@ class InputData():
         self.startEnergy = None
         self.maze = None
 
-
+#global Storage for used fields
 inputData = InputData()
 
 
 def astar(maze, start, goal, energy):
-    """Returns a list of tuples as a path from the given start to the given end in the given maze"""
+    """
+    A* Algorithm used to find the optimal way through a maze
+    Returns a list of tuples as a path from the given start to the given end in the given maze
+    @param maze: 2D Maze with walls, energy and stars
+    @param start: Start coordinate
+    @param goal: goal cooradinate
+    @param energy: amount of energy to start with
+    @return: Path taken, energy left, stars collected times 2, if function finished
+    """
 
     # Create start and end node
     start_node = Node(None, start)
     start_node.g = start_node.h = start_node.f = 0
     end_node = Node(None, goal)
     end_node.g = end_node.h = end_node.f = 0
+
+    #init stars
     stars = 0
+
     # Initialize both open and closed list
     open_list, closed_list = [], []
 
     # Add the start node
     open_list.append(start_node)
 
-    # Loop until you find the end
+    # Loop until you find the end or run out of energy
     while len(open_list) > 0 and energy > 0:
 
         # Get the current node
@@ -69,9 +89,8 @@ def astar(maze, start, goal, energy):
         closed_list.append(current_node)
 
         # Check if the current position contains an energy boost and add it to the remaining energy
-        if maze[current_node.position[0]][current_node.position[1]] == 2 or maze[current_node.position[0]][
-            current_node.position[1]] == 3:
-            print('energy')
+        if maze[current_node.position[0]][current_node.position[1]] == 2 \
+                or maze[current_node.position[0]][current_node.position[1]] == 3:
 
             # Add 5 points to the remaining energy
             energy += 5
@@ -80,9 +99,8 @@ def astar(maze, start, goal, energy):
             maze[current_node.position[0]][current_node.position[1]] -= 2
 
         # Check if the current position contains a star
-        if maze[current_node.position[0]][current_node.position[1]] == 4 or maze[current_node.position[0]][
-            current_node.position[1]] == 5:
-            print('star')
+        if maze[current_node.position[0]][current_node.position[1]] == 4 \
+                or maze[current_node.position[0]][current_node.position[1]] == 5:
 
             # Add 2 points to the current score
             stars += 2
@@ -140,8 +158,7 @@ def astar(maze, start, goal, energy):
 
             # Create the f, g, and h values
             child.g = current_node.g + 1
-            child.h = ((child.position[0] - end_node.position[0]) ** 2) + (
-                    (child.position[1] - end_node.position[1]) ** 2)
+            child.h = ((child.position[0] - end_node.position[0]) ** 2) + ((child.position[1] - end_node.position[1]) ** 2)
             child.f = child.g + child.h
 
             # Child is already in the open list
@@ -151,11 +168,20 @@ def astar(maze, start, goal, energy):
 
             # Add the child to the open list
             open_list.append(child)
-        # print(open_list)
+
     return returnAstar(open_list[0], energy, stars, False)
 
 
 def returnAstar(current_node, energy, stars, fin):
+    """
+    generates the path from start to the current node
+    returns the path through the maze, energy left, stars collected * 2 and if it finished or not
+    @param current_node: position of current node
+    @param energy: energy left
+    @param stars: collected stars
+    @param fin: if the Algorithm could finish
+    @return: Path taken, energy left, stars collected times 2, if function finished
+    """
     path = []
     current = current_node
     while current is not None:
@@ -165,6 +191,13 @@ def returnAstar(current_node, energy, stars, fin):
 
 
 def appendChildNode(children, current_node, node_position):
+    """
+    creates a new node and appends it to the children node list
+    @param children: list of children
+    @param current_node: current node
+    @param node_position: position of the node
+    @return: list of children
+    """
     # Create new node
     new_node = Node(current_node, node_position)
     # Append
@@ -173,6 +206,15 @@ def appendChildNode(children, current_node, node_position):
 
 
 def setMazecontent(maze, positions, itemValue):
+    """
+    Sets Stars or Energy by adding the value to the field
+    if the field is empty (0) filed gets item placed either 2 or 4
+    if the item has a wall field gets item placed but keeps walls values is set to 3 or 5
+    @param maze: 2D maze array
+    @param positions: positions of items to be set in the maze
+    @param itemValue: value of the item to be set  in the maze
+    @return: 2D maze array
+    """
     for index in range(0, len(positions)):
         x, y = positions[index]
         if maze[x][y] == 0 or maze[x][y] == 1:
@@ -181,6 +223,12 @@ def setMazecontent(maze, positions, itemValue):
 
 
 def setWalls(maze, positions):
+    """
+    sets Walls in the maze
+    @param maze: 2D maze array
+    @param positions: positions of walls th be set
+    @return: 2D maze with set walls
+    """
     for index in range(0, len(positions)):
         x1, y1, x2, y2 = positions[index]
         maze[x1][y1] = maze[x2][y2] = 1
@@ -188,6 +236,10 @@ def setWalls(maze, positions):
 
 
 def getFileName(name):
+    """
+    gets filename using tkinter file dialog
+    @param name: name of the place where the filename should be stored
+    """
     from tkinter import filedialog
     if name == 'walls':
         inputData.walls = filedialog.askopenfilename()
@@ -198,45 +250,57 @@ def getFileName(name):
 
 
 def guiStart():
+    """
+    GUI bulit with tkinter
+    """
     import tkinter as tk
     root = tk.Tk()
-
+    #creates a Lable "Start value"
     startLable = tk.Label(root, text="Start value")
     startLable.pack()
+    #creates a entry (inputfield) with default value
     startEntry = tk.Entry(root, width=50)
     startEntry.pack()
     startEntry.insert(0, "0,0")
     inputData.start = startEndPosition(startEntry.get())
 
+    # creates a Lable "Goal value"
     goalLable = tk.Label(root, text="Goal value")
     goalLable.pack()
+    # creates a entry (inputfield) with default value
     goalEntry = tk.Entry(root, width=50)
     goalEntry.pack()
     goalEntry.insert(0, "9,9")
     inputData.goal = startEndPosition(goalEntry.get())
 
-    startEnergyLable = tk.Label(root, text="Goal value")
+    # creates a Lable "Start Energy"
+    startEnergyLable = tk.Label(root, text="Start Energy")
     startEnergyLable.pack()
+    # creates a entry (inputfield) with default value
     startEnergyEntry = tk.Entry(root, width=50)
     startEnergyEntry.pack()
     startEnergyEntry.insert(0, "15")
     inputData.startEnergy = int(startEnergyEntry.get())
 
+    #get wall filename
     getWallsBtn = tk.Button(root, text="Get Walls", command=lambda: getFileName('walls'))
     getWallsBtn.pack()
     # wallFileLable = tk.Label(root, text=inputData.walls)
     # wallFileLable.pack()
 
+    #get energy filename
     getEnergysBtn = tk.Button(root, text="Get Energy", command=lambda: getFileName('energy'))
     getEnergysBtn.pack()
     # energyFileLable = tk.Label(root, text=inputData.walls)
     # energyFileLable.pack()
 
+    #get stars filename
     getStarsBtn = tk.Button(root, text="Get Stars", command=lambda: getFileName('stars'))
     getStarsBtn.pack()
     # starFileLable = tk.Label(root, text=inputData.walls)
     # starFileLable.pack()
 
+    #run A* algorythm
     goBtn = tk.Button(root, text="Run", command=lambda: displayGuiAStar(root, tk))
     goBtn.pack()
 
@@ -244,6 +308,11 @@ def guiStart():
 
 
 def displayGuiAStar(root, tk):
+    """
+    Runs A* Algorithm and displays the result
+    @param root: Tkinter root object
+    @param tk: tkinter object
+    """
     import numpy as np
     maze = np.zeros((10, 10))
     maze = setWalls(maze, itemPosition(inputData.walls))
@@ -258,6 +327,11 @@ def displayGuiAStar(root, tk):
 
 
 def cmdStart(args):
+    """
+    Calls all methods to run the A* Program
+    Displays result of the Algorithm
+    @param args:CLI parameters
+    """
     # Input start coordinate in format x,y if left empty will default to 0,0
     print("### Enter start as: x,y | default 0, 0")
     start = startEndPosition(args.start)
@@ -318,6 +392,11 @@ def cmdStart(args):
 
 
 def startEndPosition(args):
+    """
+    gets coordinates as String separated by a comma and returns the coordinates as numeric values
+    @param args: coordinates as string
+    @return: coordinates as coordinates
+    """
     try:
         x, y = args.split(",", 2)
         x, y = int(x), int(y)
@@ -327,18 +406,32 @@ def startEndPosition(args):
 
 
 def itemPosition(file):
+    """
+    reads data out of csv vile that is separated by a semicolon with no header and returns it as a array
+    @param file: relative path of file
+    @return: Array of item positions
+    """
     import pandas as pd
-    position_stars = pd.read_csv(file, sep=';', header=None)
-    return position_stars.values
-
+    positions = pd.read_csv(file, sep=';', header=None)
+    return positions.values
 
 def fileExists(file):
+    """
+    checks if file path exists else exists program
+    @param file: relative path of file
+    """
     import sys
     from os import path
     if not path.exists(file):
         print('File:' + file + ' doesnt exist')
         sys.exit()
 
+"""
+Entrypoint of the program
+Decides if the CLI is used or the GUI
+- GUI is called if no parameters are given
+- CLI is called if all parameters are set
+"""
 
 if __name__ == '__main__':
     import argparse as argp
