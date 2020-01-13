@@ -69,13 +69,11 @@ def astar(maze, start, goal, energy):
 
         if maze[current_node.position[0]][current_node.position[1]] == 2 or maze[current_node.position[0]][
             current_node.position[1]] == 3:
-            print('energy')
             energy += 5
             maze[current_node.position[0]][current_node.position[1]] -= 2
 
         if maze[current_node.position[0]][current_node.position[1]] == 4 or maze[current_node.position[0]][
             current_node.position[1]] == 5:
-            print('star')
             stars += 2
             maze[current_node.position[0]][current_node.position[1]] -= 4
         # decrease energy by one
