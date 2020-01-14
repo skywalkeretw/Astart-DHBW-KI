@@ -285,20 +285,14 @@ def guiStart():
     # Get wall filename
     getWallsBtn = tk.Button(root, text="Get Walls", command=lambda: getFileName('walls'))
     getWallsBtn.pack()
-    # wallFileLable = tk.Label(root, text=inputData.walls)
-    # wallFileLable.pack()
 
     # Get energy filename
     getEnergysBtn = tk.Button(root, text="Get Energy", command=lambda: getFileName('energy'))
     getEnergysBtn.pack()
-    # energyFileLable = tk.Label(root, text=inputData.walls)
-    # energyFileLable.pack()
 
     # Get stars filename
     getStarsBtn = tk.Button(root, text="Get Stars", command=lambda: getFileName('stars'))
     getStarsBtn.pack()
-    # starFileLable = tk.Label(root, text=inputData.walls)
-    # starFileLable.pack()
 
     # Run A* algorythm
     goBtn = tk.Button(root, text="Run", command=lambda: displayGuiAStar(root, tk))
