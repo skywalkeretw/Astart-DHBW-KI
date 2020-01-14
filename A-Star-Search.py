@@ -56,13 +56,13 @@ def astar(maze, start, goal, energy):
     @return: Path taken, energy left, stars collected times 2, if function finished
     """
 
-    # Create start and end node
+    # Create start and end nodes
     start_node = Node(None, start)
     start_node.g = start_node.h = start_node.f = 0
     end_node = Node(None, goal)
     end_node.g = end_node.h = end_node.f = 0
 
-    #init stars
+    # Init stars
     stars = 0
 
     # Initialize both open and closed list
@@ -108,7 +108,7 @@ def astar(maze, start, goal, energy):
             # Remove the Star from the Node and set the Node to a default Node with(out) a wall
             maze[current_node.position[0]][current_node.position[1]] -= 4
 
-        # decrease energy by one
+        # Decrease energy by one
         energy -= 1
 
         # Found the goal
@@ -207,7 +207,7 @@ def appendChildNode(children, current_node, node_position):
 
 def setMazecontent(maze, positions, itemValue):
     """
-    Sets Stars or Energy by adding the value to the field
+    sets Stars or Energy by adding the value to the field
     if the field is empty (0) filed gets item placed either 2 or 4
     if the item has a wall field gets item placed but keeps walls values is set to 3 or 5
     @param maze: 2D maze array
@@ -255,52 +255,52 @@ def guiStart():
     """
     import tkinter as tk
     root = tk.Tk()
-    #creates a Lable "Start value"
+    # Creates a Lable "Start value"
     startLable = tk.Label(root, text="Start value")
     startLable.pack()
-    #creates a entry (inputfield) with default value
+    # Creates a entry (inputfield) with default value
     startEntry = tk.Entry(root, width=50)
     startEntry.pack()
     startEntry.insert(0, "0,0")
     inputData.start = startEndPosition(startEntry.get())
 
-    # creates a Lable "Goal value"
+    # Creates a Lable "Goal value"
     goalLable = tk.Label(root, text="Goal value")
     goalLable.pack()
-    # creates a entry (inputfield) with default value
+    # Creates a entry (inputfield) with default value
     goalEntry = tk.Entry(root, width=50)
     goalEntry.pack()
     goalEntry.insert(0, "9,9")
     inputData.goal = startEndPosition(goalEntry.get())
 
-    # creates a Lable "Start Energy"
+    # Creates a Lable "Start Energy"
     startEnergyLable = tk.Label(root, text="Start Energy")
     startEnergyLable.pack()
-    # creates a entry (inputfield) with default value
+    # Creates a entry (inputfield) with default value
     startEnergyEntry = tk.Entry(root, width=50)
     startEnergyEntry.pack()
     startEnergyEntry.insert(0, "15")
     inputData.startEnergy = int(startEnergyEntry.get())
 
-    #get wall filename
+    # Get wall filename
     getWallsBtn = tk.Button(root, text="Get Walls", command=lambda: getFileName('walls'))
     getWallsBtn.pack()
     # wallFileLable = tk.Label(root, text=inputData.walls)
     # wallFileLable.pack()
 
-    #get energy filename
+    # Get energy filename
     getEnergysBtn = tk.Button(root, text="Get Energy", command=lambda: getFileName('energy'))
     getEnergysBtn.pack()
     # energyFileLable = tk.Label(root, text=inputData.walls)
     # energyFileLable.pack()
 
-    #get stars filename
+    # Get stars filename
     getStarsBtn = tk.Button(root, text="Get Stars", command=lambda: getFileName('stars'))
     getStarsBtn.pack()
     # starFileLable = tk.Label(root, text=inputData.walls)
     # starFileLable.pack()
 
-    #run A* algorythm
+    # Run A* algorythm
     goBtn = tk.Button(root, text="Run", command=lambda: displayGuiAStar(root, tk))
     goBtn.pack()
 
